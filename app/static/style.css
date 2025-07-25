@@ -1,0 +1,95 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('/static/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: #333;
+}
+
+.container {
+    width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 10px #999;
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="submit"] {
+    background-color: rgba(255, 255, 255, 0);
+    color: #000;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    width: 80%;
+}
+
+form input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+.result-table {
+    width: 400px;
+    margin: 100px auto;
+    background-color: rgba(255,255,255,0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #999;
+}
+
+.result-table ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.result-table li {
+    margin: 10px 0;
+}
+
+.register-link,
+.login-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.register-link a,
+.login-link a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.register-link a:hover,
+.login-link a:hover {
+    text-decoration: underline;
+}
