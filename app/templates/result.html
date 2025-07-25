@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Soil Info Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="result-table">
+        <h2>Land Information</h2>
+        <ul>
+            <li><strong>Land Number:</strong> {{ land_number }}</li>
+            <li><strong>Country:</strong> {{ country }}</li>
+            <li><strong>Land Type:</strong> {{ land_type }}</li>
+            <li><strong>Crop:</strong> {{ crop }}</li>
+            <li><strong>Season:</strong> {{ season }}</li>
+            <li><strong>Water Capacity:</strong> {{ water_capacity }}</li>
+        </ul>
+    </div>
+</body>
+</html>
