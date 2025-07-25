@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'konda33/hal_mitra:new' // Custom image with Docker CLI
+            image 'konda33/new_hal_mitra:latest' // Custom image with Docker CLI
             args '--privileged -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
