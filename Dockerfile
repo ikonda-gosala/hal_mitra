@@ -8,10 +8,10 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN pip install --no-cache-dir flask
+RUN pip install --no-cache-dir requirements.txt
 
 # Run DB initialization scripts
-RUN python3 init_soil_data_db.py && python3 init_users.py
+RUN python3 app/init_soil_data_db.py && python3 app/init_users.py
 
 # Expose the port Flask runs on
 EXPOSE 5000
