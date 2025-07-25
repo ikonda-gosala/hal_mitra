@@ -1,0 +1,6 @@
+1. When using the agent as docker container, Getting errors as container is not able to using the host docker daemon.
+2. So changed the agent from docker to any.
+3. steps to create pipeline.
+--> click on + , give the pipe line name and select pipeline and cick on OK.
+--> Select the 'pipeline script from SCM option' , give the git url and no creds, modify branch name, change the jenkins file name.
+--> Jenkins->manage Jenkins->Credentials->golbal domain->add the public docker creds->id same as in the jenkins file.
