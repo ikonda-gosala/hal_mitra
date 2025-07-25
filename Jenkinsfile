@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'konda33/vasudha:latest' // Custom image with Docker CLI
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    } 
 
     environment {
         IMAGE_NAME = "konda33/hal_mitra"
