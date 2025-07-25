@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'konda33/jenkins-python-docker-agent' // Custom image with Docker CLI
+            image 'konda33/hal_mitra' // Custom image with Docker CLI
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
