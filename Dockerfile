@@ -5,12 +5,16 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy all files into the container
-COPY . .
+#COPY requirements.txt .
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN pip install --no-cache-dir -r app/requirements.txt
 
-# Run DB initialization scripts
+#COPY . .
+
+RUN ls -al /app
+
 RUN python3 app/init_soil_data_db.py && python3 app/init_users.py
 
 # Expose the port Flask runs on
