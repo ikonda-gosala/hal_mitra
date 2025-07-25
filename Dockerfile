@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN pip install --no-cache-dir requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Run DB initialization scripts
 RUN python3 app/init_soil_data_db.py && python3 app/init_users.py
