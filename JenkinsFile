@@ -5,6 +5,7 @@ pipeline {
         IMAGE_NAME = "konda33/hal_mitra"
         K8S_REPO = "https://github.com/ikonda-gosala/k8s.git"
         K8S_DIR = "k8s"
+        MINIKUBE_HOST = "54.175.240.99"
     }
 
     stages {
@@ -33,30 +34,23 @@ pipeline {
         }
 
         stage('Deploy to Minikube') {
-            environment {
-                MINIKUBE_HOST = "54.175.240.99"
-            }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'minikube-ssh', keyFileVariable: 'SSH_KEY')]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ec2-user@\$MINIKUBE_HOST '
-                            if [ ! -d "${K8S_DIR}" ]; then
-                                git clone "${K8S_REPO}"
-                            else
-                                cd "${K8S_DIR}" && git pull && cd ..
-                            fi
-                            cd "${K8S_DIR}"
-                            kubectl apply -f deployment.yaml
-                            kubectl apply -f service.yaml
-                        '
-                    """
+                    // Clone or pull the repo
+                    sh "ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ec2-user@${MINIKUBE_HOST} 'if [ ! -d ${K8S_DIR} ]; then git clone ${K8S_REPO}; else cd ${K8S_DIR} && git pull; fi'"
+
+                    // Apply deployment
+                    sh "ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ec2-user@${MINIKUBE_HOST} 'cd ${K8S_DIR} && kubectl apply -f deployment.yaml'"
+
+                    // Apply service
+                    sh "ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ec2-user@${MINIKUBE_HOST} 'cd ${K8S_DIR} && kubectl apply -f service.yaml'"
                 }
             }
         }
 
         stage('Cleanup') {
             steps {
-                sh 'docker rmi ${IMAGE_NAME}'
+                sh "docker rmi ${IMAGE_NAME}"
             }
         }
     }
