@@ -1,0 +1,64 @@
+pipeline {
+    agent any 
+
+    environment {
+        IMAGE_NAME = "konda33/hal_mitra"
+        K8S_REPO = "https://github.com/ikonda-gosala/k8s.git"
+        K8S_BRANCH = "main"
+        K8S_DIR = "k8s"
+    }
+
+    stages {
+        stage('Checkout from GitHub') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${IMAGE_NAME}")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withDockerRegistry([credentialsId: 'dockerhub-creds', url: '']) {
+                    script {
+                        docker.image("${IMAGE_NAME}").push()
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Minikube') {
+            steps {
+                sshagent(['minikube-ssh']) {
+                    sh '''
+                        rm -rf ${K8S_DIR}
+                        git clone -b ${K8S_BRANCH} ${K8S_REPO} ${K8S_DIR}
+                        ssh -o StrictHostKeyChecking=no user@minikube-host << EOF
+                            cd ${K8S_DIR}
+                            kubectl apply -f deployment.yaml
+                            kubectl apply -f service.yaml
+                        EOF
+                    '''
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh 'docker rmi ${IMAGE_NAME}'
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker system prune -f'
+        }
+    }
+}
