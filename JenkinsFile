@@ -39,10 +39,8 @@ pipeline {
             }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'minikube-ssh', keyFileVariable: 'SSH_KEY')]) {
-                    script {
-                        writeFile file: 'deploy.sh', text: """
-                            #!/bin/bash
-                            set -e
+                    sh """
+                        ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ec2-user@\$MINIKUBE_HOST << EOF
                             if [ ! -d ${K8S_DIR} ]; then
                                 git clone ${K8S_REPO}
                             else
@@ -51,12 +49,8 @@ pipeline {
                             cd ${K8S_DIR}
                             kubectl apply -f deployment.yaml
                             kubectl apply -f service.yaml
-                        """
-                        sh """
-                            scp -o StrictHostKeyChecking=no -i \$SSH_KEY deploy.sh ec2-user@\$MINIKUBE_HOST:/tmp/deploy.sh
-                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ec2-user@\$MINIKUBE_HOST 'bash /tmp/deploy.sh'
-                        """
-                    }
+                        EOF
+                    """
                 }
             }
         }
