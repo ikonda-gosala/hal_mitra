@@ -1,9 +1,12 @@
-
 pipeline {
     agent any 
 
     environment {
         IMAGE_NAME = "konda33/hal_mitra"
+    }
+
+    tools {
+        sonarQubeScanner 'SonarScanner' // Must match the name in Jenkins Global Tool Configuration
     }
 
     stages {
@@ -15,7 +18,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('SonarQube') { // Must match the name in Jenkins SonarQube config
                     sh 'sonar-scanner'
                 }
             }
