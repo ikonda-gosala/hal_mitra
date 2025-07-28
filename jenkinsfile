@@ -5,14 +5,23 @@ pipeline {
         IMAGE_NAME = "konda33/hal_mitra"
         K8S_REPO = "https://github.com/ikonda-gosala/k8s.git"
         K8S_DIR = "k8s"
-        AWS_REGION = "us-east-1" 
-        CLUSTER_NAME = "hal-mitra-cluster" 
+        AWS_REGION = "us-east-1"
+        CLUSTER_NAME = "hal-mitra-cluster"
+        SONARQUBE_ENV = "sonarqube-creds" // Name configured in Jenkins
     }
 
     stages {
         stage('Checkout from GitHub') {
             steps {
                 git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    sh 'sonar-scanner -Dsonar.projectKey=hal_mitra -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_AUTH_TOKEN'
+                }
             }
         }
 
