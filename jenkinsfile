@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "konda33/hal_mitra"
+        K8S_REPO = "https://github.com/ikonda-gosala/k8s.git"
+        K8S_DIR = "k8s"
+        AWS_REGION = "ap-south-1" 
+        CLUSTER_NAME = "hal-mitra-cluster" 
+    }
+
+    stages {
+        stage('Checkout from GitHub') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${IMAGE_NAME}")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withDockerRegistry([credentialsId: 'dockerhub-creds', url: '']) {
+                    script {
+                        docker.image("${IMAGE_NAME}").push()
+                    }
+                }
+            }
+        }
+
+        stage('Configure kubectl for EKS') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    sh """
+                        aws eks --region ${AWS_REGION} update-kubeconfig --name ${CLUSTER_NAME}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to EKS') {
+            steps {
+                dir("${K8S_DIR}") {
+                    git branch: 'main', url: "${K8S_REPO}"
+                    sh """
+                        kubectl apply -f deployment.yaml
+                        kubectl apply -f service.yaml
+                    """
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh "docker rmi ${IMAGE_NAME} || true"
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker system prune -f || true'
+        }
+    }
+}
