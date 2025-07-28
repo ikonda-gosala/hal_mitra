@@ -61,18 +61,13 @@ pipeline {
                     git branch: 'main', url: "${K8S_REPO}"
                     sh """
                         
-                        echo "Checking AWS identity:"
-                        aws sts get-caller-identity
-                        
-                        echo "Checking current context:"
-                        kubectl config current-context
-                        
-                        echo "Listing nodes:"
-                        kubectl get nodes
 
-                        aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME}
-                        kubectl apply -f deployment.yaml --validate=false
-                        kubectl apply -f service.yaml --validate=false
+                        TOKEN=$(aws eks get-token --cluster-name ${CLUSTER_NAME} --region ${AWS_REGION} --output text --query 'status.token')
+                        kubectl --token=$TOKEN apply -f deployment.yaml
+
+                        //aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME}
+                        //kubectl apply -f deployment.yaml --validate=false
+                        //kubectl apply -f service.yaml --validate=false
                     """
                 }
             }
