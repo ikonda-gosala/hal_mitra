@@ -57,15 +57,18 @@ pipeline {
 
         stage('Deploy to EKS') {
             steps {
-                dir("${K8S_DIR}") {
-                    git branch: 'main', url: "${K8S_REPO}"
-                    withCredentials([file(credentialsId: 'kubeconfig-creds',variable: 'KUBECONFIG')]){
-                        sh '''
-                            export KUBECONFIG=$KUBECONFIG
-                            kubectl apply -f deployment.yaml
-                            kubectl apply -f service.yaml
-                        '''
-                    }
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',credentialsId: 'aws-creds']]) {
+                    sh """
+                        echo "Updating kubeconfig for EKS cluster..."
+                        aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+        
+                        echo "Verifying cluster access..."
+                        kubectl get nodes
+        
+                        echo "Applying Kubernetes manifests..."
+                        kubectl apply -f deployment.yaml
+                        kubectl apply -f service.yaml
+                    """
                 }
             }
         }
