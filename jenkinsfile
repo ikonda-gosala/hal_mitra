@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = "konda33/hal_mitra"
         K8S_REPO = "https://github.com/ikonda-gosala/k8s.git"
         K8S_DIR = "k8s"
-        AWS_REGION = "ap-south-1" 
+        AWS_REGION = "us-east-1" 
         CLUSTER_NAME = "hal-mitra-cluster" 
     }
 
