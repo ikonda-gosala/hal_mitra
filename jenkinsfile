@@ -59,13 +59,13 @@ pipeline {
             steps {
                 dir("${K8S_DIR}") {
                     git branch: 'main', url: "${K8S_REPO}"
-                    sh """
-                          TOKEN=\$(aws eks get-token --cluster-name ${CLUSTER_NAME} --region ${AWS_REGION} --query 'status.token' --output text)
-                          kubectl --token=\$TOKEN apply -f deployment.yaml
-                        //aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME}
-                        //kubectl apply -f deployment.yaml --validate=false
-                        //kubectl apply -f service.yaml --validate=false
-                    """
+                    withCredentials([file(credentialsID: 'kubeconfig-creds',variable: 'KUBECONFIG')]){
+                        sh '''
+                            export KUBECONFIG=$KUBECONFIG
+                            kubectl apply -f deployment.yaml
+                            kubectl apply -f service.yaml
+                        '''
+                    }
                 }
             }
         }
