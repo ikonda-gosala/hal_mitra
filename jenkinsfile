@@ -61,7 +61,7 @@ pipeline {
                     git branch: 'main', url: "${K8S_REPO}"
                     sh """
                         TOKEN=${aws eks get-token --cluster-name ${CLUSTER_NAME} --region ${AWS_REGION} --output text --query 'status.token'}
-                        kubectl --token=$TOKEN apply -f deployment.yaml
+                        kubectl --token=${TOKEN} apply -f deployment.yaml
 
                         //aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME}
                         //kubectl apply -f deployment.yaml --validate=false
