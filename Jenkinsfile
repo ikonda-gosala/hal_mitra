@@ -1,45 +1,35 @@
 pipeline {
-    agent any 
+    agent any
+
+    tools {
+        // This must match the name of the SonarQube Scanner configured in Jenkins
+        sonarQubeScanner 'SonarQube'
+    }
 
     environment {
-        IMAGE_NAME = "konda33/hal_mitra"
+        // Replace with your actual SonarQube token ID stored in Jenkins credentials
+        SONAR_TOKEN = credentials('SonarQubeToken')
     }
 
     stages {
-        stage('Checkout from GitHub') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git'
+                git 'https://github.com/ikonda-gosala/hal_mitra.git' // Replace with your actual repo
             }
         }
 
-        stage('Build Docker Image') {
+        stage('SonarQube Analysis') {
             steps {
-                script {
-                    docker.build("${IMAGE_NAME}")
+                withSonarQubeEnv('sonarqube') { // This must match the name of the SonarQube server in Jenkins
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=friday-project \
+                          -Dsonar.sources=. \
+                          -Dsonar.host.url=http://13.220.244.70:9000 \
+                          -Dsonar.login=$SONAR_TOKEN
+                    '''
                 }
             }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withDockerRegistry([credentialsId: 'dockerhub-creds', url: '']) {
-                    script {
-                        docker.image("${IMAGE_NAME}").push()
-                    }
-                }
-            }
-        }
-
-        stage('Cleanup') {
-            steps {
-                sh 'docker rmi ${IMAGE_NAME}'
-            }
-        }
-    }
-
-    post {
-        always {
-            sh 'docker system prune -f'
         }
     }
 }
