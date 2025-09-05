@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main' url: 'https://github.com/ikonda-gosala/hal_mitra.git' // Replace with your actual repo
+                git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git' // Replace with your actual repo
             }
         }
 
