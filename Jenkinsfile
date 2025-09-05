@@ -1,29 +1,21 @@
 pipeline {
-    agent any
-
-    environment {
-        // Replace with your actual SonarQube token ID stored in Jenkins credentials
-        SONAR_TOKEN = credentials('SonarQubeToken')
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git' // Replace with your actual repo
+    agent any 
+    
+    stages { 
+        stage('SCM Checkout') {
+            steps{
+           git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git'
             }
         }
-
-        stage('SonarQube Analysis') {
+        // run sonarqube test
+        stage('Run Sonarqube') {
+            environment {
+                scannerHome = tool 'SonarQube';
+            }
             steps {
-                withSonarQubeEnv('sonarqube') { // This must match the name of the SonarQube server in Jenkins
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=friday-project \
-                          -Dsonar.sources=. \
-                          -Dsonar.host.url=http://13.220.244.70:9000 \
-                          -Dsonar.login=$SONAR_TOKEN
-                    '''
-                }
+              withSonarQubeEnv(credentialsId: 'lil-sonar-credentials', installationName: 'SonarQube') {
+                sh "${scannerHome}/bin/sonar-scanner"
+              }
             }
         }
     }
