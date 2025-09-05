@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/ikonda-gosala/hal_mitra.git' // Replace with your actual repo
+                git url: 'https://github.com/ikonda-gosala/hal_mitra.git' // Replace with your actual repo
             }
         }
 
