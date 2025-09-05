@@ -68,7 +68,7 @@ pipeline {
                     git branch: 'main', url: 'https://github.com/ikonda-gosala/k8s.git'
 
                     sh """
-                        sed -i 's|image: .*|image: ${DOCKER_IMAGE}:${env.BUILD_NUMBER}|g' k8s/yaml
+                        sed -i 's|image: .*|image: ${DOCKER_IMAGE}:${env.BUILD_NUMBER}|g' k8s/deployment.yaml
                     """
                     sh """
                         git config user.email "gosalakonda2000@gmail.com"
