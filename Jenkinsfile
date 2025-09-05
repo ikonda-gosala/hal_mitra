@@ -1,21 +1,29 @@
 pipeline {
-    agent any 
-    
-    stages { 
-        stage('SCM Checkout') {
-            steps{
-           git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git'
+    agent any
+
+    environment {
+        SONAR_TOKEN = credentials('SonarQubeToken')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ikonda-gosala/hal_mitra.git'
             }
         }
-        // run sonarqube test
-        stage('Run Sonarqube') {
-            environment {
-                scannerHome = tool 'SonarQube';
-            }
+
+        stage('SonarQube Analysis') {
             steps {
-              withSonarQubeEnv(credentialsId: 'SonarQubeToken', installationName: 'SonarQube') {
-                sh "${scannerHome}/bin/sonar-scanner"
-              }
+                withSonarQubeEnv('sonarqube') {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=friday-project \
+                          -Dsonar.sources=. \
+                          -Dsonar.host.url=http://13.220.244.70:9000 \
+                          -Dsonar.python.version=3.8 \
+                          -Dsonar.login=$SONAR_TOKEN
+                    '''
+                }
             }
         }
     }
