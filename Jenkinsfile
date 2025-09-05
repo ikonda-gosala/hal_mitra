@@ -40,7 +40,6 @@ pipeline {
             }
             steps {
                 script {
-                    def DOCKER_IMAGE = "ikonda/hal_mitra"
                     dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_NUMBER}")
                 }
             }
