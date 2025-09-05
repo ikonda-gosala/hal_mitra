@@ -68,12 +68,12 @@ pipeline {
                     git branch: 'main', url: 'https://github.com/ikonda-gosala/k8s.git'
 
                     sh """
-                        sed -i 's|image: .*|image: ${DOCKER_IMAGE}:${env.BUILD_NUMBER}|g' k8s/kubernetes/yaml
+                        sed -i 's|image: .*|image: ${DOCKER_IMAGE}:${env.BUILD_NUMBER}|g' k8s/yaml
                     """
                     sh """
                         git config user.email "gosalakonda2000@gmail.com"
                         git config user.name "ikonda-gosala"
-                        git add "k8s/kubernetes/deployment.yaml"
+                        git add "k8s/deployment.yaml"
                         git commit -m "Updted image with new build number:${env.BUILD_NUMBER}"
                     """
                 }
