@@ -23,7 +23,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(credentialsId: 'SonarQube', installationName: 'SonarQube') {
+                withSonarQubeEnv(credentialsId: 'SonarQubeToken', installationName: 'SonarQube') {
                     sh """
                         ${SCANNER_HOME}/bin/sonar-scanner \
                         -Dsonar.projectKey=new-project \
@@ -53,8 +53,29 @@ pipeline {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
                         dockerImage.push()
-                        dockerImage.push('latest')
+                        //dockerImage.push('latest')
                     }
+                }
+            }
+        }
+
+        stage('Update the deployment YAML'){
+            when{
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+            }
+            steps{
+                script {
+                    git branch: 'main', url: 'https://github.com/ikonda-gosala/k8s.git'
+
+                    sh """
+                        sed -i 's|image: .*$|image: ${DOCKER_IMAGE}:${env.BUILD_NUMBER}|g' k8s/kubernetes/yaml
+                    """
+                    sh """
+                        git config user.email "gosalakonda2000@gmail.com"
+                        git config user.name "ikonda-gosala"
+                        git add "k8s/kubernetes/deployment.yaml"
+                        git commit -m "Updted image with new build number:${env.BUILD_NUMBER}"
+                    """
                 }
             }
         }
